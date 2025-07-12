@@ -3,14 +3,14 @@ name: Build and Deploy to Azure Container Apps
 on:
   push:
     branches:
-      - main  # <-- triggers only when you push to main branch
+      - main  # Trigger only when code is pushed to main branch
 
 env:
   ACR_NAME: flaskdevopsacr
   RESOURCE_GROUP: flaskRG
   CONTAINERAPP_NAME: flask-app
   IMAGE_NAME: flask-devops-app
-  IMAGE_TAG: v1
+  IMAGE_TAG: ${{ github.sha }}  # 👈 Auto-use commit SHA as image tag
 
 jobs:
   build-and-deploy:
@@ -28,7 +28,7 @@ jobs:
     - name: Log in to ACR
       run: az acr login --name $ACR_NAME
 
-    - name: Build and Push Docker image
+    - name: Build and Push Docker image to ACR
       run: |
         docker build -t $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG .
         docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG
