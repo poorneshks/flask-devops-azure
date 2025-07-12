@@ -1,0 +1,41 @@
+name: Build and Deploy to Azure Container Apps
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  ACR_NAME: flaskdevopsacr
+  RESOURCE_GROUP: flaskRG
+  CONTAINERAPP_NAME: flask-app
+  IMAGE_NAME: flask-devops-app
+  IMAGE_TAG: v1
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Log in to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Log in to ACR
+      run: az acr login --name $ACR_NAME
+
+    - name: Build and Push Docker image
+      run: |
+        docker build -t $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG .
+        docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG
+
+    - name: Deploy to Azure Container Apps
+      run: |
+        az containerapp update \
+          --name $CONTAINERAPP_NAME \
+          --resource-group $RESOURCE_GROUP \
+          --image $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG
