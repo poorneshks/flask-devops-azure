@@ -5,7 +5,7 @@ data_store = []
 
 @app.route('/health', methods=['GET'])
 def health():
-    return jsonify(status="UP"), 200
+    return jsonify(status="e sala cup namdu"), 200
 
 @app.route('/submit', methods=['POST'])
 def submit():
