@@ -3,7 +3,7 @@ name: Build and Deploy to Azure Container Apps
 on:
   push:
     branches:
-      - main
+      - main  # <-- triggers only when you push to main branch
 
 env:
   ACR_NAME: flaskdevopsacr
